@@ -2,20 +2,20 @@
 
 //signals
 #define IR_RECEIVE_PIN 0
-#define IR_BUTTON_PLUS 21 // +, strait
-#define IR_BUTTON_MINUS 7 // -, back
+#define IR_BUTTON_PLUS 21 // +, go_straight
+#define IR_BUTTON_MINUS 7 // -, go_back
 #define IR_BUTTON_CH_PLUS 71 // CH+, loop_right
 #define IR_BUTTON_CH_MINUS 69 // CH-, loop_back
 #define IR_BUTTON_PLAY_PAUSE 67 // >||, pause
-#define TURN_RIGHT 64 // >>, turn right
-#define TURN_LEFT 68 // <<, turn left
-#define SPEED_INCREASE 13 // 200+, increase speed
-#define SPEED_DECREASE 22 // 0, decrease speed
-#define STATE_DATA 9 // EQ, state data
+#define TURN_RIGHT 64 // >>, turn_right
+#define TURN_LEFT 68 // <<, turn_left
+#define SPEED_INCREASE 13 // 200+, speed_increase 
+#define SPEED_DECREASE 22 // 0, speed_decrease
+#define STATE_DATA 9 // EQ, state_data
 
 // states
 #define PAUSE 0
-#define STRAIT 1
+#define STRAIGHT 1
 #define BACK 2
 #define LOOP_RIGHT 3
 #define LOOP_LEFT 4
@@ -29,18 +29,17 @@
 #define TURN_DELAY 1000
 #define SPEED_DELTA int(64)
 
-int speed = 63;
+int speed = 255;
 int state = 0;
 
-void go_strait(){
+void go_straight(){
   digitalWrite(DIR_1, LOW); // set direction
   analogWrite(SPEED_1, speed); // set speed
   digitalWrite(DIR_2, LOW); // set direction
   analogWrite(SPEED_2, speed);
-  state = STRAIT;
+  state = STRAIGHT;
 
-  Serial.println("gone_strait");
-
+  Serial.println("gone_straight");
 }
 
 void go_back(){
@@ -51,7 +50,6 @@ void go_back(){
   state = BACK;
 
   Serial.println("gone_back");
-
 }
 
 void loop_right(){          
@@ -62,7 +60,6 @@ void loop_right(){
   state = LOOP_RIGHT;
 
   Serial.println("looped_right");
-
 }
 
 void loop_left(){          
@@ -73,7 +70,6 @@ void loop_left(){
   state = LOOP_LEFT;
 
   Serial.println("looped_left");
-
 }
 
 void pause(){
@@ -90,8 +86,8 @@ void state_data(int state){
       Serial.println("PAUSE");
       break;
     }
-    case STRAIT: {
-      Serial.println("STRAIT");
+    case STRAIGHT: {
+      Serial.println("STRAIGHT");
       break;
     }
     case BACK: {
@@ -110,31 +106,29 @@ void state_data(int state){
 }
 
 void turn_right(){
-  go_strait();
+  go_straight();
   delay(TURN_DELAY);
   loop_right();
   delay(TURN_DELAY);
-  go_strait();
+  go_straight();
 
   Serial.println("turned_right");
-
 }
 
 void turn_left(){
-  go_strait();
+  go_straight();
   delay(TURN_DELAY);
   loop_left();
   delay(TURN_DELAY);
-  go_strait();
+  go_straight();
 
   Serial.println("turned_left");
-
 }
 
 void keep_going(){
   switch(state){
-    case STRAIT: {
-      go_strait();
+    case STRAIGHT: {
+      go_straight();
       break;
     }
     case BACK: {
@@ -179,52 +173,48 @@ void speed_decrease(){
 }
 
 void execute(int command){
-  if(command == IR_BUTTON_PLAY_PAUSE){
-    pause();
-  }
   switch (command) {
-        case SPEED_INCREASE: {
-          speed_increase();
-          break;
+    case SPEED_INCREASE: {
+      speed_increase();
+      break;
+    }
+    case SPEED_DECREASE: {
+      speed_decrease();
+      break;
+    }
+    case STATE_DATA: {
+      state_data(state);
+      break;
+    }    
+    case TURN_RIGHT: {
+      turn_right();
+      break;
+    }
+    case TURN_LEFT: {
+      turn_left();
+      break;
+    }
+    case IR_BUTTON_PLUS: {
+      go_straight();
+      break;
+    }
+    case IR_BUTTON_MINUS: {
+      go_back();
+      break;
+    }
+    case IR_BUTTON_CH_PLUS: { 
+      loop_right();
+      break;
         }
-        case SPEED_DECREASE: {
-          speed_decrease();
-          break;
-        }
-        case STATE_DATA: {
-          state_data(state);
-          break;
-        }    
-        case TURN_RIGHT: {
-          turn_right();
-          break;
-        }
-        case TURN_LEFT: {
-          turn_left();
-          break;
-        }
-        case IR_BUTTON_PLUS: {
-          go_strait();
-          break;
-        }
-        case IR_BUTTON_MINUS: {
-          go_back();
-          break;
-        }
-        case IR_BUTTON_CH_PLUS: { 
-          loop_right();
-          break;
-        }
-        case IR_BUTTON_CH_MINUS: { 
-          loop_left();
-          break;
-        }
-        case IR_BUTTON_PLAY_PAUSE: { 
-          pause();
-          break;
-        }
-      }
-
+    case IR_BUTTON_CH_MINUS: { 
+      loop_left();
+      break;
+    }
+    case IR_BUTTON_PLAY_PAUSE: { 
+      pause();
+      break;
+    }
+  }
 }
 
 void setup(){
