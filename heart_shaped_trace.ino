@@ -33,8 +33,8 @@
 
 struct iter_param { // data for one iteration
   bool dir_loop; // rigth = 1, left = 0
-  int loop_time;
-  int straight_time;
+  double loop_time;
+  double straight_time;
 };
 
 struct coordinates { 
@@ -52,9 +52,9 @@ int speed = 255;
 int state = 0;
 
 // heart shaped trace data
-int diam = 1; // diameter of partition (for t)
-int one_loop_time = 1700*255/speed; // for speed 
-int iter_straight_time = 2000; // for straight trace
+double diam = 1; // diameter of partition (for t)
+double one_loop_time = 1700*255/speed; // for speed 
+double iter_straight_time = 2000; // for straight trace
 
 void go_straight(){
   digitalWrite(DIR_1, LOW); // set direction
